@@ -45,8 +45,8 @@ class App extends Component {
   setIsAll = () =>{
     this.setState({
       isAll: true,
-      activeTodos: false,
-      completedTodos: false
+      isActive: false,
+      isCompleted: false
     })
   }
 
@@ -71,20 +71,20 @@ class App extends Component {
   const allTodos=(
     this.state.todos.map((eachItem)=>
       <div>
-        <li key={eachItem.id}><input type="checkbox" value = {eachItem.completed?(true):(false)} onClick={()=>this.completeItem(eachItem.id)}/>{eachItem.title}<input type="checkbox" onClick={()=>this.removeItem(eachItem.id)}/></li>
+        <li key={eachItem.id}><input type="checkbox" checked = {eachItem.completed} onClick={()=>this.completeItem(eachItem.id)}/>{eachItem.title}<input type="checkbox" onClick={()=>this.removeItem(eachItem.id)}/></li>
       </div>))
   const activeTodos = 
     this.state.todos.map((eachItem)=> {
       if (eachItem.completed===false){
         return <div>
           {console.log(eachItem.completed)}
-        <li key={eachItem.id}><input type="checkbox" value = {eachItem.completed?(true):(false)} onClick={()=>this.completeItem(eachItem.id)}/>{eachItem.title}<input type="checkbox" onClick={()=>this.removeItem(eachItem.id)}/></li>
+        <li key={eachItem.id}><input type="checkbox" checked = {eachItem.completed} onClick={()=>this.completeItem(eachItem.id)}/>{eachItem.title}<input type="checkbox" onClick={()=>this.removeItem(eachItem.id)}/></li>
               </div>}})
   const completedTodos = 
     this.state.todos.map((eachItem)=> {
        if (eachItem.completed===true){
         return <div>
-        <li key={eachItem.id}><input type="checkbox" value = {eachItem.completed?(true):(false)} onClick={()=>this.completeItem(eachItem.id)}/>{eachItem.title}<input type="checkbox" onClick={()=>this.removeItem(eachItem.id)}/></li>
+        <li key={eachItem.id}><input type="checkbox" checked = {eachItem.completed} onClick={()=>this.completeItem(eachItem.id)}/>{eachItem.title}<input type="checkbox" onClick={()=>this.removeItem(eachItem.id)}/></li>
               </div>}})
   return (
     <div>
@@ -96,10 +96,10 @@ class App extends Component {
         </div>
         <div>
            {this.state.todos.length!==0?(
-                      <span>
-          <button className="Status-button" defaultcheckedtrue="true" onClick={this.setIsAll}>All</button>
-          <button className="Status-button" onClick={this.setIsActive}>Active</button>
-          <button className="Status-button" onClick={this.setIsCompleted}>Completed</button>
+          <span>
+            <button className="Status-button" defaultcheckedtrue="true" onClick={this.setIsAll}>All</button>
+            <button className="Status-button" onClick={this.setIsActive}>Active</button>
+            <button className="Status-button" onClick={this.setIsCompleted}>Completed</button>
           </span>):(<div/>)}
 
         </div>
