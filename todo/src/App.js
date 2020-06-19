@@ -148,22 +148,29 @@ class App extends Component {
   return (
     <div>
         <h1 className="Todo-header">todos</h1>
+        <div className = "Todo">
         <div>
-          <input type="checkbox" onClick={this.markAllComplete}/><input className="Input-box" placeholder="What needs to be done?" value={this.state.value}
-           onKeyPress={this.pushItems} onChange={this.inputText}/>
+          <input type="checkbox" className="MarkAllComplete" onClick={this.markAllComplete}/><span>
+          <input className="Input-box" placeholder="What needs to be done?" value={this.state.value}
+           onKeyPress={this.pushItems} onChange={this.inputText}/></span>
            {this.state.isAll?(allTodos):(this.state.isActive?(activeTodos):(completedTodos))}
-           {(this.state.todos.filter(todo => todo.completed === true).length!==0)&&(<button onClick={this.removeItems}>Clear Completed</button>)
-           }
         </div>
-        <div>
-           {this.state.todos.length!==0?(
-          <span>
-            <button className="Status-button" defaultcheckedtrue="true" onClick={this.setIsAll}>All</button>
+        <div class="Buttons">
+           {this.state.todos.length!==0&&(
+          <span >
+            <span className="Left-items">{(this.state.todos.filter(todo=>todo.completed === false).length)} items left</span>
+            <button className="Status-button" onClick={this.setIsAll} autofocus>All</button>
             <button className="Status-button" onClick={this.setIsActive}>Active</button>
             <button className="Status-button" onClick={this.setIsCompleted}>Completed</button>
-          </span>):(<div/>)}
+            {(this.state.todos.filter(todo => todo.completed === true).length!==0)&&(<button className="Clear-button"  onClick={this.removeItems}>Clear Completed</button>)}
+          </span>)}
+        </div>
 
         </div>
+        <footer className="Footer">
+          <p>Double Click To Edit a Todo</p>
+          <p>Created By<a href="https://github.com/narendra5234"> Narendra</a></p>
+        </footer>
     </div>
   );
   }
