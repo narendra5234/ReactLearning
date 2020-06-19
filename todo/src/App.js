@@ -4,10 +4,11 @@ import './App.css';
 class App extends Component {
   state={
     value: '',
-    todos: [ ],
+    todos: [],
     isAll: true,
     isActive: false,
-    isCompleted: false
+    isCompleted: false,
+    markAllComplete: false
   }
 
   inputText = (event) => {
@@ -35,7 +36,7 @@ class App extends Component {
       const title = e.target.value
       const id=(this.state.todos.length===0)?1:this.state.todos.slice(-1)[0].id+1
       this.setState(prevState=>({
-      todos:[...prevState.todos, {"id":id, "title":title, "completed": false}],
+      todos:[...prevState.todos, {"id":id, "title":title, "completed": false, "isEditable": false}],
       value:''
     }))
     e.preventDefault();  
@@ -59,7 +60,7 @@ class App extends Component {
   }
 
 
-  setIsCompleted = () =>{
+  setIsCompleted = () => {
     this.setState({
       isAll: false,
       isActive: false,
@@ -67,32 +68,92 @@ class App extends Component {
     })
   }
 
+  editTodo = (event,id) => {
+    const elementsIndex=this.state.todos.findIndex(element=>element.id===id)
+    const item = event.target.value
+    let newArray = [...this.state.todos]
+    newArray[elementsIndex] = {...newArray[elementsIndex], title:item, isEditable: false}
+    this.setState({
+      todos:newArray
+    })
+  }
+  changeEditMode = (id)=>{
+    const elementsIndex=this.state.todos.findIndex(element=>element.id===id)
+    let newArray = [...this.state.todos]
+    newArray[elementsIndex] = {...newArray[elementsIndex], isEditable:!newArray[elementsIndex].isEditable}   
+    this.setState({
+      todos:newArray
+    }) 
+  }
+  markAllComplete = () => {
+    this.setState({
+      markAllComplete: !this.state.markAllComplete
+    })
+    const newArray = [...this.state.todos];
+    for (let i = 0; i < newArray.length; i++) {
+      newArray[i].completed=!this.state.markAllComplete
+      }
+    this.setState({
+      todos:newArray
+    })
+    };
+
+  removeItems = () =>{
+    const newArray = [];
+    for (let i = 0; i < this.state.todos.length; i++) {
+      if (this.state.todos[i].completed!==true)
+      {
+        newArray.push(this.state.todos[i])
+      }
+  }
+    this.setState({
+      todos:newArray
+    })
+  }
+
+  isCompletedTodosAvailable = () =>{
+    console.log("aaaaaaaaaa")
+    const completedTodos = this.state.todos.map((todo)=>{
+      if (todo.completed===true){
+        return todo
+      }
+    })
+    console.log(completedTodos.length)
+    return (completedTodos.length!==0)?(true):(false)
+  }
   render(){
-  const allTodos=(
-    this.state.todos.map((eachItem)=>
-      <div>
-        <li key={eachItem.id}><input type="checkbox" checked = {eachItem.completed} onClick={()=>this.completeItem(eachItem.id)}/>{eachItem.title}<input type="checkbox" onClick={()=>this.removeItem(eachItem.id)}/></li>
-      </div>))
-  const activeTodos = 
-    this.state.todos.map((eachItem)=> {
+    const allTodos = this.state.todos.map((eachItem)=>
+          <div>
+            <input type="checkbox" checked = {eachItem.completed} onClick={()=>this.completeItem(eachItem.id)}/>
+            {eachItem.isEditable?(<input type="text"  defaultValue={eachItem.title} onBlur={(event)=>this.editTodo(event,eachItem.id)}/>):(<span onDoubleClick={()=>this.changeEditMode(eachItem.id)}>{eachItem.title}</span>)}
+            <button onClick={()=>this.removeItem(eachItem.id)}/>
+          </div>)
+
+    const activeTodos = this.state.todos.map((eachItem)=> {
       if (eachItem.completed===false){
         return <div>
-          {console.log(eachItem.completed)}
-        <li key={eachItem.id}><input type="checkbox" checked = {eachItem.completed} onClick={()=>this.completeItem(eachItem.id)}/>{eachItem.title}<input type="checkbox" onClick={()=>this.removeItem(eachItem.id)}/></li>
+        <input type="checkbox" checked = {eachItem.completed} onClick={()=>this.completeItem(eachItem.id)}/>
+        {eachItem.isEditable?(<input type="text"  defaultValue={eachItem.title} onBlur={(event)=>this.editTodo(event,eachItem.id)}/>):(<span onDoubleClick={()=>this.changeEditMode(eachItem.id)}>{eachItem.title}</span>)}
+        <button onClick={()=>this.removeItem(eachItem.id)}/>
               </div>}})
-  const completedTodos = 
-    this.state.todos.map((eachItem)=> {
-       if (eachItem.completed===true){
-        return <div>
-        <li key={eachItem.id}><input type="checkbox" checked = {eachItem.completed} onClick={()=>this.completeItem(eachItem.id)}/>{eachItem.title}<input type="checkbox" onClick={()=>this.removeItem(eachItem.id)}/></li>
-              </div>}})
+
+    const completedTodos = this.state.todos.map((eachItem)=> {
+        if (eachItem.completed===true){
+         return <div>
+         <input type="checkbox" checked = {eachItem.completed} onClick={()=>this.completeItem(eachItem.id)}/>
+         {eachItem.isEditable?(<input type="text"  defaultValue={eachItem.title} onBlur={(event)=>this.editTodo(event,eachItem.id)}/>):(<span onDoubleClick={()=>this.changeEditMode(eachItem.id)}>{eachItem.title}</span>)}
+         <button onClick={()=>this.removeItem(eachItem.id)}/>
+               </div>}})
+
   return (
     <div>
         <h1 className="Todo-header">todos</h1>
         <div>
-          <input className="Input-box" placeholder="What needs to be done?" value={this.state.value}
+          <input type="checkbox" onClick={this.markAllComplete}/><input className="Input-box" placeholder="What needs to be done?" value={this.state.value}
            onKeyPress={this.pushItems} onChange={this.inputText}/>
            {this.state.isAll?(allTodos):(this.state.isActive?(activeTodos):(completedTodos))}
+           {(this.state.todos.filter(todo => todo.completed === true).length!==0)&&(<button onClick={this.removeItems}>Clear Completed</button>)
+           }
         </div>
         <div>
            {this.state.todos.length!==0?(
